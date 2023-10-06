@@ -2,10 +2,10 @@ package segment_test
 
 import (
 	"encoding/json"
-	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/jdkato/stransform/nlp/internal"
 	"github.com/jdkato/stransform/nlp/segment"
 )
 
@@ -18,23 +18,9 @@ type goldenRule struct {
 	Output []string
 }
 
-func readDataFile(path string) []byte {
-	p, err := filepath.Abs(path)
-	if err != nil {
-		panic(err)
-	}
-
-	data, ferr := os.ReadFile(p)
-	if err != nil {
-		panic(ferr)
-	}
-
-	return data
-}
-
 func BenchmarkPunkt(b *testing.B) {
 	tests := make([]goldenRule, 0)
-	cases := readDataFile(filepath.Join(testdata, "golden_rules_en.json"))
+	cases := internal.ReadDataFile(filepath.Join(testdata, "golden_rules_en.json"))
 
 	err := json.Unmarshal(cases, &tests)
 	if err != nil {

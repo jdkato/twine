@@ -112,9 +112,9 @@ func NewIterTokenizer(opts ...TokenizerOptFunc) *iterTokenizer {
 	return tok
 }
 
-func addToken(s string, toks []*Token) []*Token {
+func addToken(s string, toks []string) []string {
 	if strings.TrimSpace(s) != "" {
-		toks = append(toks, &Token{Text: s})
+		toks = append(toks, s)
 	}
 	return toks
 }
@@ -124,9 +124,9 @@ func (t *iterTokenizer) isSpecial(token string) bool {
 	return found || t.specialRE.MatchString(token) || t.isUnsplittable(token)
 }
 
-func (t *iterTokenizer) doSplit(token string) []*Token {
-	tokens := []*Token{}
-	suffs := []*Token{}
+func (t *iterTokenizer) doSplit(token string) []string {
+	tokens := []string{}
+	suffs := []string{}
 
 	last := 0
 	for token != "" && utf8.RuneCountInString(token) != last {
@@ -152,9 +152,7 @@ func (t *iterTokenizer) doSplit(token string) []*Token {
 			token = token[idx:]
 		} else if hasAnySuffix(token, t.suffixes) {
 			// Remove suffixes -- e.g., Well) -> [Well, )].
-			suffs = append([]*Token{
-				{Text: string(token[len(token)-1])}},
-				suffs...)
+			suffs = append([]string{string(token[len(token)-1])}, suffs...)
 			token = token[:len(token)-1]
 		} else {
 			tokens = addToken(token, tokens)
@@ -165,14 +163,14 @@ func (t *iterTokenizer) doSplit(token string) []*Token {
 }
 
 // tokenize splits a sentence into a slice of words.
-func (t *iterTokenizer) Tokenize(text string) []*Token {
-	var tokens []*Token
+func (t *iterTokenizer) Tokenize(text string) []string {
+	var tokens []string
 
 	clean, white := t.sanitizer.Replace(text), false
 	length := len(clean)
 
 	start, index := 0, 0
-	cache := map[string][]*Token{}
+	cache := map[string][]string{}
 	for index <= length {
 		uc, size := utf8.DecodeRuneInString(clean[index:])
 		if size == 0 {

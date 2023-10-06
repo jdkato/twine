@@ -24,6 +24,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/jdkato/stransform/nlp/internal"
 )
 
 var none = regexp.MustCompile(`^(?:0|\*[\w?]\*|\*\-\d{1,3}|\*[A-Z]+\*\-\d{1,3}|\*)$`)
@@ -192,7 +194,7 @@ func (ap *AveragedPerceptron) updateFeat(c, f string, v, w float64) {
 }
 
 func (ap *AveragedPerceptron) addClass(class string) {
-	if !stringInSlice(class, ap.classes) {
+	if !internal.StringInSlice(class, ap.classes) {
 		ap.classes = append(ap.classes, class)
 	}
 }
@@ -211,10 +213,10 @@ func max(scores map[string]float64) string {
 
 func featurize(i int, ctx []string, w, p1, p2 string) map[string]float64 {
 	feats := make(map[string]float64)
-	suf := min(len(w), 3)
-	i = min(len(ctx)-2, i+2)
-	iminus := min(len(ctx[i-1]), 3)
-	iplus := min(len(ctx[i+1]), 3)
+	suf := internal.Min(len(w), 3)
+	i = internal.Min(len(ctx)-2, i+2)
+	iminus := internal.Min(len(ctx[i-1]), 3)
+	iplus := internal.Min(len(ctx[i+1]), 3)
 	feats = add([]string{"bias"}, feats)
 	feats = add([]string{"i suffix", w[len(w)-suf:]}, feats)
 	feats = add([]string{"i pref1", string(w[0])}, feats)
