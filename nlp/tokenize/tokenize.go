@@ -1,4 +1,4 @@
-package nlp
+package tokenize
 
 import (
 	"regexp"
@@ -6,6 +6,12 @@ import (
 	"unicode"
 	"unicode/utf8"
 )
+
+// A Token represents an individual token of text such as a word or punctuation
+// symbol.
+type Token struct {
+	Text string // The token's actual content.
+}
 
 type TokenTester func(string) bool
 

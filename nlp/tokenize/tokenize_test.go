@@ -1,4 +1,4 @@
-package nlp
+package tokenize
 
 import (
 	"encoding/json"

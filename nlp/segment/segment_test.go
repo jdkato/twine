@@ -1,11 +1,16 @@
-package nlp
+package segment_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/jdkato/stransform/nlp/segment"
 )
+
+var testdata = "../..testdata"
+var segmenter = segment.NewPunktSentenceTokenizer()
 
 type goldenRule struct {
 	Name   string
@@ -19,19 +24,12 @@ func readDataFile(path string) []byte {
 		panic(err)
 	}
 
-	data, ferr := ioutil.ReadFile(p)
+	data, ferr := os.ReadFile(p)
 	if err != nil {
 		panic(ferr)
 	}
 
 	return data
-}
-
-func makeSegmenter(text string) (*Document, error) {
-	return NewDocument(
-		text,
-		UsingTokenizer(nil),
-		WithTagging(false))
 }
 
 func BenchmarkPunkt(b *testing.B) {
@@ -45,7 +43,7 @@ func BenchmarkPunkt(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		for i := range tests {
-			_, err := makeSegmenter(tests[i].Input)
+			_ = segmenter.Segment(tests[i].Input)
 			if err != nil {
 				panic(err)
 			}
@@ -55,8 +53,7 @@ func BenchmarkPunkt(b *testing.B) {
 
 func TestEnglishSmartQuotes(t *testing.T) {
 	actualText := "Here is a quote, ”a smart one.” Will this break properly?"
-	doc, _ := makeSegmenter(actualText)
-	actual := doc.Sentences()
+	actual := segmenter.Segment(actualText)
 
 	expected := []string{
 		"Here is a quote, ”a smart one.”",
@@ -68,7 +65,7 @@ func TestEnglishSmartQuotes(t *testing.T) {
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Fatalf("Actual: %s\nExpected: %s", sent, expected[index])
 		}
 	}
@@ -76,8 +73,7 @@ func TestEnglishSmartQuotes(t *testing.T) {
 
 func TestEnglishCustomAbbrev(t *testing.T) {
 	actualText := "One custom abbreviation is F.B.I.  The abbreviation, F.B.I. should properly break."
-	doc, _ := makeSegmenter(actualText)
-	actual := doc.Sentences()
+	actual := segmenter.Segment(actualText)
 
 	expected := []string{
 		"One custom abbreviation is F.B.I.",
@@ -89,14 +85,13 @@ func TestEnglishCustomAbbrev(t *testing.T) {
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Fatalf("Actual: %s\nExpected: %s", sent, expected[index])
 		}
 	}
 
 	actualText = "An abbreviation near the end of a G.D. sentence.  J.G. Wentworth was cool."
-	doc, _ = makeSegmenter(actualText)
-	actual = doc.Sentences()
+	actual = segmenter.Segment(actualText)
 
 	expected = []string{
 		"An abbreviation near the end of a G.D. sentence.",
@@ -108,7 +103,7 @@ func TestEnglishCustomAbbrev(t *testing.T) {
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Fatalf("Actual: %s\nExpected: %s", sent, expected[index])
 		}
 	}
@@ -116,8 +111,7 @@ func TestEnglishCustomAbbrev(t *testing.T) {
 
 func TestEnglishSupervisedAbbrev(t *testing.T) {
 	actualText := "I am a Sgt. in the army.  I am a No. 1 student.  The Gov. of Michigan is a dick."
-	doc, _ := makeSegmenter(actualText)
-	actual := doc.Sentences()
+	actual := segmenter.Segment(actualText)
 
 	expected := []string{
 		"I am a Sgt. in the army.",
@@ -130,7 +124,7 @@ func TestEnglishSupervisedAbbrev(t *testing.T) {
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Fatalf("Actual: %s\nExpected: %s", sent, expected[index])
 		}
 	}
@@ -138,8 +132,7 @@ func TestEnglishSupervisedAbbrev(t *testing.T) {
 
 func TestEnglishSemicolon(t *testing.T) {
 	actualText := "I am here; you are over there.  Will the tokenizer output two complete sentences?"
-	doc, _ := makeSegmenter(actualText)
-	actual := doc.Sentences()
+	actual := segmenter.Segment(actualText)
 
 	expected := []string{
 		"I am here; you are over there.",
@@ -151,15 +144,14 @@ func TestEnglishSemicolon(t *testing.T) {
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Fatalf("Actual: %s\nExpected: %s", sent, expected[index])
 		}
 	}
 }
 
 func compareSentences(t *testing.T, actualText string, expected []string, test string) bool {
-	doc, _ := makeSegmenter(actualText)
-	actual := doc.Sentences()
+	actual := segmenter.Segment(actualText)
 
 	if len(actual) != len(expected) {
 		t.Log(test)
@@ -170,7 +162,7 @@ func compareSentences(t *testing.T, actualText string, expected []string, test s
 	}
 
 	for index, sent := range actual {
-		if sent.Text != expected[index] {
+		if sent != expected[index] {
 			t.Log(test)
 			t.Errorf("Actual: [%s] Expected: [%s]\n", sent, expected[index])
 			t.Log("===")

@@ -1,4 +1,4 @@
-package nlp
+package tag
 
 import (
 	"bytes"

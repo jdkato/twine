@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package nlp
+package segment
 
 import (
 	"regexp"
@@ -28,6 +28,11 @@ import (
 	"gopkg.in/neurosnap/sentences.v1/data"
 )
 
+// A Sentence represents a segmented portion of text.
+type Sentence struct {
+	Text string // The sentence's text.
+}
+
 // punktSentenceTokenizer is an extension of the Go implementation of the Punkt
 // sentence tokenizer (https://github.com/neurosnap/sentences), with a few
 // minor improvements (see https://github.com/neurosnap/sentences/pull/18).
@@ -35,9 +40,9 @@ type punktSentenceTokenizer struct {
 	tokenizer *sentences.DefaultSentenceTokenizer
 }
 
-// newPunktSentenceTokenizer creates a new PunktSentenceTokenizer and loads
+// NewPunktSentenceTokenizer creates a new PunktSentenceTokenizer and loads
 // its English model.
-func newPunktSentenceTokenizer() *punktSentenceTokenizer {
+func NewPunktSentenceTokenizer() *punktSentenceTokenizer {
 	var pt punktSentenceTokenizer
 	var err error
 
@@ -49,12 +54,11 @@ func newPunktSentenceTokenizer() *punktSentenceTokenizer {
 	return &pt
 }
 
-// segment splits text into sentences.
-func (p punktSentenceTokenizer) segment(text string) []Sentence {
-	tokens := p.tokenizer.Tokenize(text)
-	sents := make([]Sentence, len(tokens))
-	for i := range tokens {
-		sents[i] = Sentence{Text: strings.TrimSpace(tokens[i].Text)}
+// Segment splits text into sentences.
+func (p punktSentenceTokenizer) Segment(text string) []string {
+	sents := []string{}
+	for _, s := range p.tokenizer.Tokenize(text) {
+		sents = append(sents, strings.TrimSpace(s.Text))
 	}
 	return sents
 }
