@@ -10,7 +10,7 @@ import (
 	"github.com/jdkato/stransform/nlp/tokenize"
 )
 
-var testdata = "../..testdata"
+var testdata = "../../testdata"
 var tokenizer = tokenize.NewIterTokenizer()
 
 func checkTokens(t *testing.T, tokens []string, expected []string, name string) {
