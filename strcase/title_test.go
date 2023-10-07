@@ -1,10 +1,12 @@
-package strcase
+package strcase_test
 
 import (
 	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/jdkato/stransform/strcase"
 )
 
 var testdata = filepath.Join("../testdata")
@@ -41,7 +43,7 @@ func TestAP(t *testing.T) {
 		t.Error(err)
 	}
 
-	tc := NewTitleConverter(APStyle)
+	tc := strcase.NewTitleConverter(strcase.APStyle)
 	for _, test := range tests {
 		title := tc.Title(test.Input)
 		if test.Expect != title {
@@ -63,7 +65,7 @@ func TestChicago(t *testing.T) {
 		t.Error(err)
 	}
 
-	tc := NewTitleConverter(ChicagoStyle)
+	tc := strcase.NewTitleConverter(strcase.ChicagoStyle)
 	for _, test := range tests {
 		title := tc.Title(test.Input)
 		if test.Expect != title {
@@ -85,7 +87,7 @@ func BenchmarkTitle(b *testing.B) {
 		b.Error(err)
 	}
 
-	tc := NewTitleConverter(APStyle)
+	tc := strcase.NewTitleConverter(strcase.APStyle)
 	for n := 0; n < b.N; n++ {
 		for _, test := range tests {
 			_ = tc.Title(test.Input)
