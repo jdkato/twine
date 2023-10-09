@@ -2,10 +2,10 @@ package strcase_test
 
 import (
 	"encoding/json"
-	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/jdkato/stransform/internal"
 	"github.com/jdkato/stransform/strcase"
 )
 
@@ -16,29 +16,11 @@ type testCase struct {
 	Expect string
 }
 
-func readDataFile(path string) ([]byte, error) {
-	p, err := filepath.Abs(path)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := os.ReadFile(p)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
-}
-
 func TestAP(t *testing.T) {
 	tests := make([]testCase, 0)
+	cases := internal.ReadDataFile(filepath.Join(testdata, "AP.json"))
 
-	cases, err := readDataFile(filepath.Join(testdata, "AP.json"))
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = json.Unmarshal(cases, &tests)
+	err := json.Unmarshal(cases, &tests)
 	if err != nil {
 		t.Error(err)
 	}
@@ -54,13 +36,9 @@ func TestAP(t *testing.T) {
 
 func TestChicago(t *testing.T) {
 	tests := make([]testCase, 0)
+	cases := internal.ReadDataFile(filepath.Join(testdata, "Chicago.json"))
 
-	cases, err := readDataFile(filepath.Join(testdata, "Chicago.json"))
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = json.Unmarshal(cases, &tests)
+	err := json.Unmarshal(cases, &tests)
 	if err != nil {
 		t.Error(err)
 	}
@@ -76,13 +54,9 @@ func TestChicago(t *testing.T) {
 
 func BenchmarkTitle(b *testing.B) {
 	tests := make([]testCase, 0)
+	cases := internal.ReadDataFile(filepath.Join(testdata, "title.json"))
 
-	cases, err := readDataFile(filepath.Join(testdata, "title.json"))
-	if err != nil {
-		b.Error(err)
-	}
-
-	err = json.Unmarshal(cases, &tests)
+	err := json.Unmarshal(cases, &tests)
 	if err != nil {
 		b.Error(err)
 	}

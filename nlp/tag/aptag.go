@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jdkato/stransform/nlp/internal"
+	"github.com/jdkato/stransform/internal"
 )
 
 var none = regexp.MustCompile(`^(?:0|\*[\w?]\*|\*\-\d{1,3}|\*[A-Z]+\*\-\d{1,3}|\*)$`)
