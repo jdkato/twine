@@ -4,13 +4,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 var reNumberList = regexp.MustCompile(`\d+\.`)
-var titleCased = cases.Title(language.English)
 
 // A SentenceConverter converts a string to sentence case.
 type SentenceConverter struct {
@@ -55,6 +51,8 @@ func NewSentenceConverter(opts ...SentenceOptFunc) *SentenceConverter {
 func (sc *SentenceConverter) Sentence(s string) string {
 	var made []string
 
+	s = strings.ToLower(s)
+
 	ps := `[\p{N}\p{L}*]+[^\s]*`
 	if len(sc.vocab) > 0 {
 		ps = fmt.Sprintf(`(?:%s)|%s`, strings.Join(sc.vocab, "|"), ps)
@@ -71,7 +69,7 @@ func (sc *SentenceConverter) Sentence(s string) string {
 		if entry := sc.inVocab(token); entry != "" {
 			made = append(made, entry)
 		} else if i == 0 || sc.indicator(prev, i-1) {
-			made = append(made, titleCased.String(strings.ToLower(token)))
+			made = append(made, toTitle(token))
 		} else {
 			made = append(made, strings.ToLower(token))
 		}

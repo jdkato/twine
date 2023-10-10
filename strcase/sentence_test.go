@@ -9,8 +9,10 @@ import (
 var cases = []testCase{
 	{"", ""},
 	{"1. An important heading", "1. An important heading"},
-	{"getting started with vale server", "Getting started with vale server"},
+	{"getting started with Vale server", "Getting started with vale server"},
 	{"Lession 1: getting started with vale server", "Lession 1: Getting started with vale server"},
+	{"Top-Level ideas", "Top-level ideas"},
+	{"Intro to the top-level idEas", "Intro to the top-level ideas"},
 }
 
 var vocabCases = []testCase{

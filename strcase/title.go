@@ -57,7 +57,7 @@ func (tc *TitleConverter) Title(s string) string {
 			return sm
 		}
 
-		return toTitle(m, prev)
+		return toTitle(m)
 	})
 }
 
@@ -121,7 +121,7 @@ func charAt(s string, i int) byte {
 
 // toTitle returns a copy of the string m with its first Unicode letter mapped
 // to its title case.
-func toTitle(m string, prev byte) string {
+func toTitle(m string) string {
 	r, size := utf8.DecodeRuneInString(m)
 	return string(unicode.ToTitle(r)) + m[size:]
 }
