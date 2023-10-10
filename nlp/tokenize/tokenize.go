@@ -31,6 +31,7 @@ type iterTokenizer struct {
 	prefixes       []string
 	emoticons      map[string]int
 	isUnsplittable TokenTester
+	noSuffix       bool
 }
 
 type TokenizerOptFunc func(*iterTokenizer)
@@ -91,6 +92,12 @@ func UsingSplitCases(x []string) TokenizerOptFunc {
 	}
 }
 
+func WithoutSuffix() TokenizerOptFunc {
+	return func(tokenizer *iterTokenizer) {
+		tokenizer.noSuffix = true
+	}
+}
+
 // Constructor for default iterTokenizer
 func NewIterTokenizer(opts ...TokenizerOptFunc) *iterTokenizer {
 	tok := new(iterTokenizer)
@@ -103,6 +110,7 @@ func NewIterTokenizer(opts ...TokenizerOptFunc) *iterTokenizer {
 	tok.sanitizer = sanitizer
 	tok.specialRE = internalRE
 	tok.suffixes = suffixes
+	tok.noSuffix = false
 
 	// Apply options if provided
 	for _, applyOpt := range opts {
@@ -164,6 +172,41 @@ func (t *iterTokenizer) doSplit(token string) []string {
 	return append(tokens, suffs...)
 }
 
+func (t *iterTokenizer) doSplitNoSuffix(token string) []string {
+	var tokens []string
+
+	last := 0
+	for token != "" && utf8.RuneCountInString(token) != last {
+		if t.isSpecial(token) {
+			// We've found a special case (e.g., an emoticon) -- so, we add it as a token without
+			// any further processing.
+			tokens = addToken(token, tokens)
+			break
+		}
+		last = utf8.RuneCountInString(token)
+		lower := strings.ToLower(token)
+		if internal.HasAnyPrefix(token, t.prefixes) {
+			// Remove prefixes -- e.g., $100 -> [$, 100].
+			token = token[1:]
+		} else if idx := internal.HasAnyIndex(lower, t.splitCases); idx > -1 {
+			// Handle "they'll", "I'll", "Don't", "won't", amount($).
+			//
+			// they'll -> [they, 'll].
+			// don't -> [do, n't].
+			// amount($) -> [amount, (, $, )].
+			tokens = addToken(token[:idx], tokens)
+			token = token[idx:]
+		} else if internal.HasAnySuffix(token, t.suffixes) {
+			// Remove suffixes -- e.g., Well) -> [Well, )].
+			token = token[:len(token)-1]
+		} else {
+			tokens = addToken(token, tokens)
+		}
+	}
+
+	return tokens
+}
+
 // tokenize splits a sentence into a slice of words.
 func (t *iterTokenizer) Tokenize(text string) []string {
 	var tokens []string
@@ -186,7 +229,12 @@ func (t *iterTokenizer) Tokenize(text string) []string {
 				if toks, found := cache[span]; found {
 					tokens = append(tokens, toks...)
 				} else {
-					toks := t.doSplit(span)
+					toks := []string{}
+					if t.noSuffix {
+						toks = t.doSplitNoSuffix(span)
+					} else {
+						toks = t.doSplit(span)
+					}
 					cache[span] = toks
 					tokens = append(tokens, toks...)
 				}
