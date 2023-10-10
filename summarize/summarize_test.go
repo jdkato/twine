@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jdkato/stransform/internal"
+	"github.com/jdkato/twine/internal"
 )
 
 var testdata = filepath.Join("..", "testdata")

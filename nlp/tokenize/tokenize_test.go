@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jdkato/stransform/internal"
-	"github.com/jdkato/stransform/nlp/tokenize"
+	"github.com/jdkato/twine/internal"
+	"github.com/jdkato/twine/nlp/tokenize"
 )
 
 var testdata = "../../testdata"

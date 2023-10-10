@@ -6,7 +6,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/jdkato/stransform/nlp/tag"
+	"github.com/jdkato/twine/nlp/tag"
 )
 
 var tagger = tag.NewPerceptronTagger()

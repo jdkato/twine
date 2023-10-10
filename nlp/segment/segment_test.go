@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jdkato/stransform/internal"
-	"github.com/jdkato/stransform/nlp/segment"
+	"github.com/jdkato/twine/internal"
+	"github.com/jdkato/twine/nlp/segment"
 )
 
 var testdata = "../..testdata"

@@ -1,4 +1,4 @@
-module github.com/jdkato/stransform
+module github.com/jdkato/twine
 
 go 1.21.0
 

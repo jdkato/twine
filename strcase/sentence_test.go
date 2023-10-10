@@ -3,7 +3,7 @@ package strcase_test
 import (
 	"testing"
 
-	"github.com/jdkato/stransform/strcase"
+	"github.com/jdkato/twine/strcase"
 )
 
 var cases = []testCase{

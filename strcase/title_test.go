@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jdkato/stransform/internal"
-	"github.com/jdkato/stransform/strcase"
+	"github.com/jdkato/twine/internal"
+	"github.com/jdkato/twine/strcase"
 )
 
 var testdata = filepath.Join("../testdata")

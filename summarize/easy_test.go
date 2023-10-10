@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jdkato/stransform/internal"
+	"github.com/jdkato/twine/internal"
 )
 
 func BenchmarkEasyWordsLookupMap(b *testing.B) {

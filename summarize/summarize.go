@@ -8,9 +8,9 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/jdkato/stransform/internal"
-	"github.com/jdkato/stransform/nlp/segment"
-	"github.com/jdkato/stransform/nlp/tokenize"
+	"github.com/jdkato/twine/internal"
+	"github.com/jdkato/twine/nlp/segment"
+	"github.com/jdkato/twine/nlp/tokenize"
 
 	"github.com/montanaflynn/stats"
 )
