@@ -21,3 +21,25 @@ func HasAnySuffix(s string, suffixes []string) bool {
 	}
 	return false
 }
+
+func HasAnyPrefix(s string, prefixes []string) bool {
+	n := len(s)
+	for _, prefix := range prefixes {
+		if n > len(prefix) && strings.HasPrefix(s, prefix) {
+			return true
+		}
+
+	}
+	return false
+}
+
+func HasAnyIndex(s string, suffixes []string) int {
+	n := len(s)
+	for _, suffix := range suffixes {
+		idx := strings.Index(s, suffix)
+		if idx >= 0 && n > len(suffix) {
+			return idx
+		}
+	}
+	return -1
+}

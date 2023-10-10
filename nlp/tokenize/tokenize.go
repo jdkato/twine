@@ -5,6 +5,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/jdkato/twine/internal"
 )
 
 // A Token represents an individual token of text such as a word or punctuation
@@ -138,11 +140,11 @@ func (t *iterTokenizer) doSplit(token string) []string {
 		}
 		last = utf8.RuneCountInString(token)
 		lower := strings.ToLower(token)
-		if hasAnyPrefix(token, t.prefixes) {
+		if internal.HasAnyPrefix(token, t.prefixes) {
 			// Remove prefixes -- e.g., $100 -> [$, 100].
 			tokens = addToken(string(token[0]), tokens)
 			token = token[1:]
-		} else if idx := hasAnyIndex(lower, t.splitCases); idx > -1 {
+		} else if idx := internal.HasAnyIndex(lower, t.splitCases); idx > -1 {
 			// Handle "they'll", "I'll", "Don't", "won't", amount($).
 			//
 			// they'll -> [they, 'll].
@@ -150,7 +152,7 @@ func (t *iterTokenizer) doSplit(token string) []string {
 			// amount($) -> [amount, (, $, )].
 			tokens = addToken(token[:idx], tokens)
 			token = token[idx:]
-		} else if hasAnySuffix(token, t.suffixes) {
+		} else if internal.HasAnySuffix(token, t.suffixes) {
 			// Remove suffixes -- e.g., Well) -> [Well, )].
 			suffs = append([]string{string(token[len(token)-1])}, suffs...)
 			token = token[:len(token)-1]
