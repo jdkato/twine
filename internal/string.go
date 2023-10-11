@@ -1,6 +1,10 @@
 package internal
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+	"unicode/utf8"
+)
 
 // StringInSlice determines if `slice` contains the string `a`.
 func StringInSlice(a string, slice []string) bool {
@@ -42,4 +46,20 @@ func HasAnyIndex(s string, suffixes []string) int {
 		}
 	}
 	return -1
+}
+
+// CharAt returns the ith character of s, if it exists. Otherwise, it returns
+// the first character.
+func CharAt(s string, i int) byte {
+	if i >= 0 && i < len(s) {
+		return s[i]
+	}
+	return s[0]
+}
+
+// ToTitle returns a copy of the string m with its first Unicode letter mapped
+// to its title case.
+func ToTitle(m string) string {
+	r, size := utf8.DecodeRuneInString(m)
+	return string(unicode.ToTitle(r)) + m[size:]
 }

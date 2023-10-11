@@ -4,51 +4,45 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/jdkato/twine/internal"
 )
 
 var reNumberList = regexp.MustCompile(`\d+\.`)
+var defaultSentOpts = CaseOpts{
+	vocab: []string{},
+	indicator: func(word string, idx int) bool {
+		if strings.HasSuffix(word, ":") {
+			return true
+		} else if idx == 0 && reNumberList.MatchString(word) {
+			return true
+		}
+		return false
+	},
+}
 
 // A SentenceConverter converts a string to sentence case.
 type SentenceConverter struct {
-	vocab     []string
-	indicator IndicatorFunc
-}
-
-// SentenceOptFunc is a function that modifies a SentenceConverter.
-type SentenceOptFunc func(*SentenceConverter)
-
-// An IndicatorFunc is a SentenceConverter callback that decides whether or not
-// the string word should be capitalized.
-type IndicatorFunc func(word string, idx int) bool
-
-// UsingVocab sets the vocab for the SentenceConverter.
-func UsingVocab(vocab []string) SentenceOptFunc {
-	return func(converter *SentenceConverter) {
-		converter.vocab = vocab
-	}
-}
-
-// UsingIndicator sets the indicator for the SentenceConverter.
-func UsingIndicator(indicator IndicatorFunc) SentenceOptFunc {
-	return func(converter *SentenceConverter) {
-		converter.indicator = indicator
-	}
+	CaseOpts
 }
 
 // NewSentenceConverter returns a new SentenceConverter.
-func NewSentenceConverter(opts ...SentenceOptFunc) *SentenceConverter {
+func NewSentenceConverter(opts ...CaseOptFunc) *SentenceConverter {
 	sent := new(SentenceConverter)
 
-	sent.indicator = wasIndicator
+	base := defaultSentOpts
 	for _, opt := range opts {
-		opt(sent)
+		opt(&base)
 	}
+
+	sent.vocab = base.vocab
+	sent.indicator = base.indicator
 
 	return sent
 }
 
-// Sentence returns a copy of the string s in sentence case format.
-func (sc *SentenceConverter) Sentence(s string) string {
+// Convert returns a copy of the string s in sentence case format.
+func (sc *SentenceConverter) Convert(s string) string {
 	var made []string
 
 	s = strings.ToLower(s)
@@ -69,7 +63,7 @@ func (sc *SentenceConverter) Sentence(s string) string {
 		if entry := sc.inVocab(token); entry != "" {
 			made = append(made, entry)
 		} else if i == 0 || sc.indicator(prev, i-1) {
-			made = append(made, toTitle(token))
+			made = append(made, internal.ToTitle(token))
 		} else {
 			made = append(made, strings.ToLower(token))
 		}
@@ -85,13 +79,4 @@ func (sc *SentenceConverter) inVocab(s string) string {
 		}
 	}
 	return ""
-}
-
-func wasIndicator(word string, idx int) bool {
-	if strings.HasSuffix(word, ":") {
-		return true
-	} else if idx == 0 && reNumberList.MatchString(word) {
-		return true
-	}
-	return false
 }

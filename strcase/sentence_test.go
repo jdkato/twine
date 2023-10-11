@@ -22,7 +22,7 @@ var vocabCases = []testCase{
 func TestSentence(t *testing.T) {
 	tc := strcase.NewSentenceConverter()
 	for _, test := range cases {
-		sent := tc.Sentence(test.Input)
+		sent := tc.Convert(test.Input)
 		if test.Expect != sent {
 			t.Fatalf("Got '%s'; expected '%s'", sent, test.Expect)
 		}
@@ -35,7 +35,7 @@ func TestVocab(t *testing.T) {
 	}))
 
 	for _, test := range vocabCases {
-		sent := tc.Sentence(test.Input)
+		sent := tc.Convert(test.Input)
 		if test.Expect != sent {
 			t.Fatalf("Got '%s'; expected '%s'", sent, test.Expect)
 		}

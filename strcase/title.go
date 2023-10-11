@@ -3,13 +3,33 @@ package strcase
 import (
 	"regexp"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
+	"github.com/jdkato/twine/internal"
 	"github.com/jdkato/twine/nlp/tag"
 )
 
 var tagger = tag.NewPerceptronTagger()
+var smallWords = []string{
+	"a", "an", "and", "as", "at", "but", "by", "en", "for", "if", "in", "nor",
+	"of", "on", "or", "per", "the", "to", "vs", "vs.", "via", "v", "v."}
+var prepositions = []string{
+	"with", "from", "into", "during", "including", "until", "against", "among",
+	"throughout", "despite", "towards", "upon", "concerning", "about", "over",
+	"through", "before", "between", "after", "since", "without", "under",
+	"within", "along", "following", "across", "beyond", "around", "down",
+	"near", "above"}
+var splitRE = regexp.MustCompile(`[\p{N}\p{L}]+[^\s-/]*`)
+
+// sanitizer replaces a set of Unicode characters with ASCII equivalents.
+var sanitizer = strings.NewReplacer(
+	"\u201c", `"`,
+	"\u201d", `"`,
+	"\u2018", "'",
+	"\u2019", "'",
+	"\u2013", "-",
+	"\u2014", "-",
+	"\u2026", "...")
 
 // An IgnoreFunc is a TitleConverter callback that decides whether or not the
 // the string word should be capitalized. firstOrLast indicates whether or not
@@ -18,6 +38,7 @@ type IgnoreFunc func(word string, tags []tag.Token, idx int, firstOrLast bool) b
 
 // A TitleConverter converts a string to title case according to its style.
 type TitleConverter struct {
+	CaseOpts
 	ignore IgnoreFunc
 }
 
@@ -26,14 +47,31 @@ var (
 	ChicagoStyle IgnoreFunc = optionsChicago
 )
 
-// NewTitleConverter returns a new TitleConverter set to enforce the specified
-// style.
-func NewTitleConverter(style IgnoreFunc) *TitleConverter {
-	return &TitleConverter{ignore: style}
+var defaultTitleOpts = CaseOpts{
+	vocab: []string{},
+	indicator: func(word string, idx int) bool {
+		return false
+	},
 }
 
-// Title returns a copy of the string s in title case format.
-func (tc *TitleConverter) Title(s string) string {
+// NewTitleConverter returns a new TitleConverter set to enforce the specified
+// style.
+func NewTitleConverter(style IgnoreFunc, opts ...CaseOptFunc) *TitleConverter {
+	title := &TitleConverter{ignore: style}
+
+	base := defaultTitleOpts
+	for _, opt := range opts {
+		opt(&base)
+	}
+
+	title.vocab = base.vocab
+	title.indicator = base.indicator
+
+	return title
+}
+
+// Convert returns a copy of the string s in title case format.
+func (tc *TitleConverter) Convert(s string) string {
 	idx, pos := 0, 0
 	t := sanitizer.Replace(s)
 	end := len(t)
@@ -46,19 +84,29 @@ func (tc *TitleConverter) Title(s string) string {
 
 		sm := strings.ToLower(m)
 		pos = strings.Index(t[idx:], m) + idx
-		prev := charAt(t, pos-1)
+		prev := internal.CharAt(t, pos-1)
 		ext := utf8.RuneCountInString(m)
 
 		idx = pos + ext
-		if tc.ignore(sm, tags, widx, pos == 0 || idx == end) &&
+		if found := tc.inVocab(sm); found != "" {
+			return found
+		} else if tc.ignore(sm, tags, widx, pos == 0 || idx == end) &&
 			(prev == ' ' || prev == '-' || prev == '/') &&
-			charAt(t, pos-2) != ':' && charAt(t, pos-2) != '-' &&
-			(charAt(t, pos+ext) != '-' || charAt(t, pos-1) == '-') {
+			internal.CharAt(t, pos-2) != ':' && internal.CharAt(t, pos-2) != '-' &&
+			(internal.CharAt(t, pos+ext) != '-' || internal.CharAt(t, pos-1) == '-') {
 			return sm
 		}
-
-		return toTitle(m)
+		return internal.ToTitle(m)
 	})
+}
+
+func (tc *TitleConverter) inVocab(s string) string {
+	for _, token := range tc.vocab {
+		if strings.ToLower(token) == strings.ToLower(s) {
+			return token
+		}
+	}
+	return ""
 }
 
 // optionsAP implements AP-style casing.
@@ -77,60 +125,12 @@ func optionsAP(word string, tags []tag.Token, idx int, bounding bool) bool {
 		}
 		return t1
 	}
-	return !bounding && stringInSlice(word, smallWords)
+	return !bounding && internal.StringInSlice(word, smallWords)
 }
 
 // ChicagoStyle states to lowercase articles (a, an, the), coordinating
 // conjunctions (and, but, or, for, nor), and prepositions, regardless of
 // length, unless they are the first or last word of the title.
 func optionsChicago(word string, tags []tag.Token, idx int, bounding bool) bool {
-	return !bounding && (stringInSlice(word, smallWords) || stringInSlice(word, prepositions))
-}
-
-var smallWords = []string{
-	"a", "an", "and", "as", "at", "but", "by", "en", "for", "if", "in", "nor",
-	"of", "on", "or", "per", "the", "to", "vs", "vs.", "via", "v", "v."}
-
-var prepositions = []string{
-	"with", "from", "into", "during", "including", "until", "against", "among",
-	"throughout", "despite", "towards", "upon", "concerning", "about", "over",
-	"through", "before", "between", "after", "since", "without", "under",
-	"within", "along", "following", "across", "beyond", "around", "down",
-	"near", "above"}
-
-var splitRE = regexp.MustCompile(`[\p{N}\p{L}]+[^\s-/]*`)
-
-// sanitizer replaces a set of Unicode characters with ASCII equivalents.
-var sanitizer = strings.NewReplacer(
-	"\u201c", `"`,
-	"\u201d", `"`,
-	"\u2018", "'",
-	"\u2019", "'",
-	"\u2013", "-",
-	"\u2014", "-",
-	"\u2026", "...")
-
-// charAt returns the ith character of s, if it exists. Otherwise, it returns
-// the first character.
-func charAt(s string, i int) byte {
-	if i >= 0 && i < len(s) {
-		return s[i]
-	}
-	return s[0]
-}
-
-// toTitle returns a copy of the string m with its first Unicode letter mapped
-// to its title case.
-func toTitle(m string) string {
-	r, size := utf8.DecodeRuneInString(m)
-	return string(unicode.ToTitle(r)) + m[size:]
-}
-
-func stringInSlice(a string, slice []string) bool {
-	for _, b := range slice {
-		if a == b {
-			return true
-		}
-	}
-	return false
+	return !bounding && (internal.StringInSlice(word, smallWords) || internal.StringInSlice(word, prepositions))
 }
