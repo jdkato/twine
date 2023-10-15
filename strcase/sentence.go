@@ -49,7 +49,7 @@ func (sc *SentenceConverter) Convert(s string) string {
 
 	ps := `[\p{N}\p{L}*]+[^\s]*`
 	if len(sc.vocab) > 0 {
-		ps = fmt.Sprintf(`(?:%s)|%s`, strings.Join(sc.vocab, "|"), ps)
+		ps = fmt.Sprintf(`\b(?:%s)\b|%s`, strings.Join(sc.vocab, "|"), ps)
 	}
 	re := regexp.MustCompile(`(?i)` + ps)
 
