@@ -74,8 +74,11 @@ func (sc *SentenceConverter) Convert(s string) string {
 
 func (sc *SentenceConverter) inVocab(s string) string {
 	for _, token := range sc.vocab {
+		matched, _ := regexp.MatchString(token, s)
 		if strings.ToLower(token) == strings.ToLower(s) {
 			return token
+		} else if matched {
+			return s
 		}
 	}
 	return ""
