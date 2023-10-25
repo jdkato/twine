@@ -19,6 +19,7 @@ type testCase struct {
 var vocabTitles = []testCase{
 	{"Getting started with iOS 15", "Getting Started With iOS 15"},
 	{"Understanding json and yaml", "Understanding JSON and YAML"},
+	{"Develop File-Proxy Plugin", "Develop File-Proxy Plugin"},
 }
 
 func TestTitleVocab(t *testing.T) {
