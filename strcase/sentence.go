@@ -2,19 +2,19 @@ package strcase
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
+	"github.com/errata-ai/regexp2"
 	"github.com/jdkato/twine/internal"
 )
 
-var reNumberList = regexp.MustCompile(`\d+\.`)
+var reNumberList = regexp2.MustCompileStd(`\d+\.`)
 var defaultSentOpts = CaseOpts{
 	vocab: []string{},
 	indicator: func(word string, idx int) bool {
 		if strings.HasSuffix(word, ":") {
 			return true
-		} else if idx == 0 && reNumberList.MatchString(word) {
+		} else if idx == 0 && reNumberList.MatchStringStd(word) {
 			return true
 		}
 		return false
@@ -51,7 +51,7 @@ func (sc *SentenceConverter) Convert(s string) string {
 	if len(sc.vocab) > 0 {
 		ps = fmt.Sprintf(`\b(?:%s)\b|%s`, strings.Join(sc.vocab, "|"), ps)
 	}
-	re := regexp.MustCompile(`(?i)` + ps)
+	re := regexp2.MustCompileStd(`(?i)` + ps)
 
 	tokens := re.FindAllString(s, -1)
 	for i, token := range tokens {
@@ -74,7 +74,7 @@ func (sc *SentenceConverter) Convert(s string) string {
 
 func (sc *SentenceConverter) inVocab(s string) string {
 	for _, token := range sc.vocab {
-		matched, _ := regexp.MatchString(token, s)
+		matched, _ := regexp2.MatchString(token, s)
 		if strings.ToLower(token) == strings.ToLower(s) {
 			return token
 		} else if matched {

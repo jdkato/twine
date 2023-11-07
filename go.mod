@@ -7,4 +7,7 @@ require (
 	gopkg.in/neurosnap/sentences.v1 v1.0.7
 )
 
-require github.com/neurosnap/sentences v1.1.2 // indirect
+require (
+	github.com/errata-ai/regexp2 v1.7.0 // indirect
+	github.com/neurosnap/sentences v1.1.2 // indirect
+)

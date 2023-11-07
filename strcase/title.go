@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/errata-ai/regexp2"
 	"github.com/jdkato/twine/internal"
 	"github.com/jdkato/twine/nlp/tag"
 )
@@ -102,7 +103,7 @@ func (tc *TitleConverter) Convert(s string) string {
 
 func (tc *TitleConverter) inVocab(s string) string {
 	for _, token := range tc.vocab {
-		matched, _ := regexp.MatchString(token, s)
+		matched, _ := regexp2.MatchString(token, s)
 		if strings.ToLower(token) == strings.ToLower(s) {
 			return token
 		} else if matched {
