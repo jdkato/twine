@@ -65,7 +65,7 @@ func (sc *SentenceConverter) Convert(s string) string {
 		if entry := sc.inVocab(token); entry != "" {
 			made = append(made, entry)
 		} else if i == 0 || sc.indicator(prev, i-1) {
-			made = append(made, internal.ToTitle(token))
+			made = append(made, internal.ToTitle(token, true))
 		} else {
 			made = append(made, strings.ToLower(token))
 		}

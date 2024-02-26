@@ -59,7 +59,13 @@ func CharAt(s string, i int) byte {
 
 // ToTitle returns a copy of the string m with its first Unicode letter mapped
 // to its title case.
-func ToTitle(m string) string {
+func ToTitle(m string, strict bool) string {
 	r, size := utf8.DecodeRuneInString(m)
-	return string(unicode.ToTitle(r)) + strings.ToLower(m[size:])
+
+	other := m[size:]
+	if strict {
+		other = strings.ToLower(other)
+	}
+
+	return string(unicode.ToTitle(r)) + other
 }

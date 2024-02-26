@@ -97,7 +97,8 @@ func (tc *TitleConverter) Convert(s string) string {
 			(internal.CharAt(t, pos+ext) != '-' || internal.CharAt(t, pos-1) == '-') {
 			return sm
 		}
-		return internal.ToTitle(m)
+
+		return internal.ToTitle(m, false)
 	})
 }
 
