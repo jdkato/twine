@@ -20,14 +20,17 @@ var vocabTitles = []testCase{
 	{"Getting started with iOS 15", "Getting Started With iOS 15"},
 	{"Understanding json and yaml", "Understanding JSON and YAML"},
 	{"Develop File-Proxy Plugin", "Develop File-Proxy Plugin"},
+	{"b. Next title text", "b. Next Title Text"},
 }
 
 func TestTitleVocab(t *testing.T) {
-	tc := strcase.NewTitleConverter(strcase.APStyle, strcase.UsingVocab([]string{
-		"iOS",
-		"JSON",
-		"YAML",
-	}))
+	tc := strcase.NewTitleConverter(strcase.APStyle,
+		strcase.UsingVocab([]string{
+			"iOS",
+			"JSON",
+			"YAML",
+		}),
+		strcase.UsingPrefix(`^[a-z]\.\s`))
 
 	for _, test := range vocabTitles {
 		sent := tc.Convert(test.Input)

@@ -2,6 +2,7 @@ package strcase
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/errata-ai/regexp2"
@@ -37,6 +38,7 @@ func NewSentenceConverter(opts ...CaseOptFunc) *SentenceConverter {
 
 	sent.vocab = base.vocab
 	sent.indicator = base.indicator
+	sent.prefix = base.prefix
 
 	return sent
 }
@@ -44,6 +46,14 @@ func NewSentenceConverter(opts ...CaseOptFunc) *SentenceConverter {
 // Convert returns a copy of the string s in sentence case format.
 func (sc *SentenceConverter) Convert(s string) string {
 	var made []string
+
+	prefix := ""
+	if sc.prefix != "" {
+		if prefixRe := regexp.MustCompile(sc.prefix); prefixRe.MatchString(s) {
+			prefix = prefixRe.FindString(s)
+			s = strings.TrimPrefix(s, prefix)
+		}
+	}
 
 	ps := `[\p{N}\p{L}*]+[^\s]*`
 	if len(sc.vocab) > 0 {
@@ -71,7 +81,7 @@ func (sc *SentenceConverter) Convert(s string) string {
 		}
 	}
 
-	return strings.Join(made, " ")
+	return prefix + strings.Join(made, " ")
 }
 
 func (sc *SentenceConverter) inVocab(s string) string {

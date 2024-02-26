@@ -14,7 +14,17 @@ type IndicatorFunc func(word string, idx int) bool
 
 // CaseOpts is a struct that holds the options for a CaseConverter.
 type CaseOpts struct {
-	vocab     []string
+	// A prefix to match before converting the string.
+	//
+	// Example:
+	//
+	// a. This is a sentence.
+	prefix string
+
+	// A list of words to specifying how to capitalize them.
+	vocab []string
+
+	// A function that determines whether or not a word should be capitalized.
 	indicator IndicatorFunc
 }
 
@@ -29,5 +39,12 @@ func UsingVocab(vocab []string) CaseOptFunc {
 func UsingIndicator(indicator IndicatorFunc) CaseOptFunc {
 	return func(opts *CaseOpts) {
 		opts.indicator = indicator
+	}
+}
+
+// UsingPrefix sets the prefix for the CaseConverter.
+func UsingPrefix(prefix string) CaseOptFunc {
+	return func(opts *CaseOpts) {
+		opts.prefix = prefix
 	}
 }

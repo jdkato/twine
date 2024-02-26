@@ -67,12 +67,21 @@ func NewTitleConverter(style IgnoreFunc, opts ...CaseOptFunc) *TitleConverter {
 
 	title.vocab = base.vocab
 	title.indicator = base.indicator
+	title.prefix = base.prefix
 
 	return title
 }
 
 // Convert returns a copy of the string s in title case format.
 func (tc *TitleConverter) Convert(s string) string {
+	prefix := ""
+	if tc.prefix != "" {
+		if prefixRe := regexp.MustCompile(tc.prefix); prefixRe.MatchString(s) {
+			prefix = prefixRe.FindString(s)
+			s = strings.TrimPrefix(s, prefix)
+		}
+	}
+
 	idx, pos := 0, 0
 	t := sanitizer.Replace(s)
 	end := len(t)
@@ -80,7 +89,7 @@ func (tc *TitleConverter) Convert(s string) string {
 	tags := tagger.Tag(splitRE.FindAllString(strings.ToLower(s), -1))
 	widx := -1
 
-	return splitRE.ReplaceAllStringFunc(s, func(m string) string {
+	return prefix + splitRE.ReplaceAllStringFunc(s, func(m string) string {
 		widx += 1
 
 		sm := strings.ToLower(m)
