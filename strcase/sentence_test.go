@@ -20,6 +20,7 @@ var vocabCases = []testCase{
 	{"Issue triage", "Issue triage"},
 	{"macOS 15: What's new", "macOS 15: What's new"},
 	{"Configuration", "Configuration"},
+	{"Six NASA Instruments Will Fly to Moon on Intuitive Machines Lander", "Six NASA instruments will fly to Moon on intuitive machines lander"},
 }
 
 func TestSentence(t *testing.T) {
@@ -35,9 +36,11 @@ func TestSentence(t *testing.T) {
 func TestVocab(t *testing.T) {
 	tc := strcase.NewSentenceConverter(strcase.UsingVocab([]string{
 		"Vale Server",
-		"I",
+		"\bI\b",
 		"macOS",
 		"[Cc]onfig",
+		"NASA",
+		"Moon",
 	}))
 
 	for _, test := range vocabCases {
