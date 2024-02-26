@@ -61,5 +61,5 @@ func CharAt(s string, i int) byte {
 // to its title case.
 func ToTitle(m string) string {
 	r, size := utf8.DecodeRuneInString(m)
-	return string(unicode.ToTitle(r)) + m[size:]
+	return string(unicode.ToTitle(r)) + strings.ToLower(m[size:])
 }

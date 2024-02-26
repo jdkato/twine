@@ -45,8 +45,6 @@ func NewSentenceConverter(opts ...CaseOptFunc) *SentenceConverter {
 func (sc *SentenceConverter) Convert(s string) string {
 	var made []string
 
-	s = strings.ToLower(s)
-
 	ps := `[\p{N}\p{L}*]+[^\s]*`
 	if len(sc.vocab) > 0 {
 		ps = fmt.Sprintf(`\b(?:%s)\b|%s`, strings.Join(sc.vocab, "|"), ps)
@@ -54,6 +52,10 @@ func (sc *SentenceConverter) Convert(s string) string {
 	re := regexp2.MustCompileStd(`(?i)` + ps)
 
 	tokens := re.FindAllString(s, -1)
+	// NOTE: We have to do this *after* tokenizing the string in order to
+	// respect the case of would-be exceptions.
+	s = strings.ToLower(s)
+
 	for i, token := range tokens {
 		prev := ""
 		if i-1 >= 0 {

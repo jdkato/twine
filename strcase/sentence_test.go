@@ -19,6 +19,7 @@ var vocabCases = []testCase{
 	{"Getting started with vale server", "Getting started with Vale Server"},
 	{"Issue triage", "Issue triage"},
 	{"macOS 15: What's new", "macOS 15: What's new"},
+	{"Configuration", "Configuration"},
 }
 
 func TestSentence(t *testing.T) {
@@ -36,6 +37,7 @@ func TestVocab(t *testing.T) {
 		"Vale Server",
 		"I",
 		"macOS",
+		"[Cc]onfig",
 	}))
 
 	for _, test := range vocabCases {
