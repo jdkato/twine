@@ -252,7 +252,15 @@
         "expect": "What I Want To Be When I Grow Up"
     },
     {
-        "input": "we went to las vegas to drink",
+        "input": "we went to Las Vegas to drink",
         "expect": "We Went to Las Vegas To Drink"
+    },
+    {
+        "input": "Connect Consul to Gateway",
+        "expect": "Connect Consul to Gateway"
+    },
+    {
+        "input": "Connect Consul to Gateway.",
+        "expect": "Connect Consul to Gateway."
     }
 ]

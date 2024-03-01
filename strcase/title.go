@@ -8,8 +8,10 @@ import (
 	"github.com/errata-ai/regexp2"
 	"github.com/jdkato/twine/internal"
 	"github.com/jdkato/twine/nlp/tag"
+	"github.com/jdkato/twine/nlp/tokenize"
 )
 
+var tokenizer = tokenize.NewTreebankWordTokenizer()
 var tagger = tag.NewPerceptronTagger()
 var smallWords = []string{
 	"a", "an", "and", "as", "at", "but", "by", "en", "for", "if", "in", "nor",
@@ -86,7 +88,15 @@ func (tc *TitleConverter) Convert(s string) string {
 	t := sanitizer.Replace(s)
 	end := len(t)
 
-	tags := tagger.Tag(splitRE.FindAllString(strings.ToLower(s), -1))
+	// NOTE: We do thos because the tagger is sensitive to trailing punctuation
+	// AND the initial case of the input.
+	forTagging := s
+	if !internal.HasAnySuffix(s, []string{".", "!", "?"}) {
+		forTagging = s + "."
+	}
+	words := tokenizer.Tokenize(forTagging)
+
+	tags := tagger.Tag(words)
 	widx := -1
 
 	return prefix + splitRE.ReplaceAllStringFunc(s, func(m string) string {
@@ -133,11 +143,7 @@ func (tc *TitleConverter) inVocab(s string) string {
 // See testdata/AP.json for examples.
 func optionsAP(word string, tags []tag.Token, idx int, bounding bool) bool {
 	if word == "to" && idx+1 < len(tags) {
-		t1 := strings.HasPrefix(tags[idx+1].Tag, "NN")
-		if !t1 && idx+2 < len(tags) {
-			return strings.HasPrefix(tags[idx+2].Tag, "NN")
-		}
-		return t1
+		return strings.HasPrefix(tags[idx+1].Tag, "NN")
 	}
 	return !bounding && internal.StringInSlice(word, smallWords)
 }
