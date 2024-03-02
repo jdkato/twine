@@ -122,5 +122,13 @@
     {
         "input": "hmm ... this is interesting...",
         "expect": "Hmm ... This Is Interesting..."
+    },
+    {
+        "input": "For Servers Running Ubuntu 16.04 or 18.04",
+        "expect": "For Servers Running Ubuntu 16.04 or 18.04"
+    },
+    {
+        "input": "Any-source Multicase Routing (ASM)",
+        "expect": "Any-Source Multicase Routing (ASM)"
     }
 ]
