@@ -22,6 +22,7 @@ var vocabCases = []testCase{
 	{"Configuration", "Configuration"},
 	{"Six NASA Instruments Will Fly to Moon on Intuitive Machines Lander", "Six NASA instruments will fly to Moon on intuitive machines lander"},
 	{"b. Next title text", "b. Next title text"},
+	{"Axon Server connection", "Axon Server connection"},
 }
 
 func TestSentence(t *testing.T) {
@@ -43,6 +44,8 @@ func TestVocab(t *testing.T) {
 			"[Cc]onfig",
 			"NASA",
 			"Moon",
+			"Axon",
+			"Axon Server",
 		}),
 		strcase.UsingPrefix(`^[a-z]\.\s`))
 

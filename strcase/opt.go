@@ -1,5 +1,7 @@
 package strcase
 
+import "sort"
+
 // A CaseConverter converts a string to a specific case.
 type CaseConverter interface {
 	Convert(string) string
@@ -31,6 +33,10 @@ type CaseOpts struct {
 // UsingVocab sets the vocab for the CaseConverter.
 func UsingVocab(vocab []string) CaseOptFunc {
 	return func(opts *CaseOpts) {
+		// NOTE: This is required to ensure that we have greedy alternation.
+		sort.Slice(vocab, func(p, q int) bool {
+			return len(vocab[p]) > len(vocab[q])
+		})
 		opts.vocab = vocab
 	}
 }
