@@ -13,6 +13,8 @@ var cases = []testCase{
 	{"Lession 1: getting started with vale server", "Lession 1: Getting started with vale server"},
 	{"Top-Level ideas", "Top-level ideas"},
 	{"Intro to the top-level idEas", "Intro to the top-level ideas"},
+	{"build-backend tools", "Build-backend tools"},
+	{"README files", "Readme files"},
 }
 
 var vocabCases = []testCase{
