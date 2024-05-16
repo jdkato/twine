@@ -25,6 +25,7 @@ var vocabCases = []testCase{
 	{"Six NASA Instruments Will Fly to Moon on Intuitive Machines Lander", "Six NASA instruments will fly to Moon on intuitive machines lander"},
 	{"b. Next title text", "b. Next title text"},
 	{"Axon Server connection", "Axon Server connection"},
+	{"vale ale", "Vale ale"},
 }
 
 func TestSentence(t *testing.T) {
@@ -41,13 +42,14 @@ func TestVocab(t *testing.T) {
 	tc := strcase.NewSentenceConverter(
 		strcase.UsingVocab([]string{
 			"Vale Server",
-			"\bI\b",
+			`\bI\b`,
 			"macOS",
 			"[Cc]onfig",
 			"NASA",
 			"Moon",
 			"Axon",
 			"Axon Server",
+			`\bale\b`,
 		}),
 		strcase.UsingPrefix(`^[a-z]\.\s`))
 

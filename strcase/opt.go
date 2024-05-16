@@ -1,6 +1,8 @@
 package strcase
 
-import "sort"
+import (
+	"sort"
+)
 
 // A CaseConverter converts a string to a specific case.
 type CaseConverter interface {
