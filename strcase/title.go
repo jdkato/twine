@@ -108,7 +108,7 @@ func (tc *TitleConverter) Convert(s string) string {
 		ext := utf8.RuneCountInString(m)
 
 		idx = pos + ext
-		if found := tc.inVocab(sm); found != "" {
+		if found := tc.inVocab(m); found != "" {
 			return found
 		} else if tc.ignore(sm, tags, widx, pos == 0 || idx == end) &&
 			(prev == ' ' || prev == '-' || prev == '/') &&
@@ -124,7 +124,7 @@ func (tc *TitleConverter) Convert(s string) string {
 func (tc *TitleConverter) inVocab(s string) string {
 	for _, token := range tc.vocab {
 		matched, _ := regexp2.MatchString(token, s)
-		if strings.ToLower(token) == strings.ToLower(s) {
+		if strings.EqualFold(token, s) {
 			return token
 		} else if matched {
 			return s

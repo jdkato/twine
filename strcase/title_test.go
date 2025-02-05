@@ -22,6 +22,7 @@ var vocabTitles = []testCase{
 	{"Develop File-Proxy Plugin", "Develop File-Proxy Plugin"},
 	{"b. Next title text", "b. Next Title Text"},
 	{"vale ale", "Vale ale"},
+	{"New Repository and Project", "New Repository and Project"},
 }
 
 func TestTitleVocab(t *testing.T) {
@@ -31,6 +32,7 @@ func TestTitleVocab(t *testing.T) {
 			"JSON",
 			"YAML",
 			`\bale\b`,
+			`[Rr]epo`,
 		}),
 		strcase.UsingPrefix(`^[a-z]\.\s`))
 
